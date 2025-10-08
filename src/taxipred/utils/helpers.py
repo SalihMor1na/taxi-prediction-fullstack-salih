@@ -46,46 +46,46 @@ def get_ors_driving_distance(pickup_location: str, dropoff_location: str) -> dic
     geolocator = Nominatim(user_agent="taxi_price_predictor_ors", adapter_factory=None)
 
    
-        start_loc = geolocator.geocode(pickup_location, timeout=5)  # type: ignore
-        end_loc = geolocator.geocode(dropoff_location, timeout=5) # type: ignore
+    start_loc = geolocator.geocode(pickup_location, timeout=5)  # type: ignore
+    end_loc = geolocator.geocode(dropoff_location, timeout=5) # type: ignore
 
      
        
-        start_lat, start_lon, _ = start_loc.point # type: ignore
-        end_lat, end_lon, _ = end_loc.point # type: ignore
-
+    start_lat, start_lon, _ = start_loc.point # type: ignore
+    end_lat, end_lon, _ = end_loc.point # type: ignore
        
-        coords = [
+    coords = [
             [start_lon, start_lat],
             [end_lon, end_lat]
         ]
 
-        headers = {
+    headers = {
             'Accept': 'application/json',
             'Authorization': ORS_API_KEY
         }
         
-        body = {
+    body = {
             "locations": coords,
             "metrics": ["duration", "distance"]
         }
 
     
-        response = requests.post(
+    response = requests.post(
             'https://api.openrouteservice.org/v2/matrix/driving-car',
             json=body,
             headers=headers
         )
-        response.raise_for_status()
+    response.raise_for_status()
 
-        data = response.json()
+    data = response.json()
 
         
-        distance_meters = data['distances'][0][1]
-        duration_seconds = data['durations'][0][1]
+    distance_meters = data['distances'][0][1]
+    duration_seconds = data['durations'][0][1]
 
-        return {
+    return {
             "distance_km": distance_meters / 1000.0,
             "duration_minutes": duration_seconds / 60.0
         }
+
 
